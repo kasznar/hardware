@@ -1,8 +1,15 @@
 import { For, createEffect, createSignal } from "solid-js"
 
+const displayMap = [
+    0, 1, 2, 3,
+    7, 6, 5, 4,
+    8, 9, 10, 11,
+    15, 14, 13, 12
+]
+
 
 const config = {
-    width: 12,
+    width: 4,
     height: 4
 }
 
@@ -29,26 +36,29 @@ const [pixels, setPixels] = createSignal(initialPixels)
 const [socket, setSocket] = createSignal<WebSocket | null>(null)
 // const [send, setSend] = createSignal<(message: string) => void>(() => {})
 
+const rgbToRequest = (item: RgbPixel) => ({ r: item.getRed(), g: item.getGreen(), b: item.getBlue() })
+
 
 const createMessage = () => {
-    const thing = pixels().map(item => ({r: item.getRed(), g: item.getGreen(), b: item.getBlue()}))
+    const displayAdjustedPixels = mapToDisplay(pixels())
+    const pixelsMessage = displayAdjustedPixels.map(rgbToRequest)
 
-        console.log(thing)
+    console.log(pixelsMessage)
 
-        return JSON.stringify({pixels: thing})
+    return JSON.stringify({ pixels: pixelsMessage })
 
 }
 
 const mapToDisplay = (pixels: RgbPixel[]) => {
-    let counter = 0
+    // return pixels
+
     const result: RgbPixel[] = new Array(length).fill(new RgbPixel(0, 0, 0))
 
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            const index = j + i * 12
-            result[counter] = pixels[index]
-            counter++
-        }        
+
+
+    for (let i=0; i < 16; i++) {
+        const index = displayMap[i]
+        result[i] = pixels[index] 
     }
 
     return result
@@ -61,7 +71,7 @@ createEffect(() => {
     const message = createMessage()
 
     socket()?.send(message);
-    
+
     console.log(pixels());
 });
 
@@ -108,9 +118,19 @@ export const Pixel = ({ pixel, index }: { pixel: RgbPixel, index: number }) => {
 }
 
 
+export const PixelGrid = ({ pixels }: { pixels: RgbPixel[] }) => {
+
+    return (<div class="display" style={`grid-template-columns: repeat(${config.width}, 1fr)`}>
+        <For each={pixels}>{(pixel, i) =>
+            <Pixel pixel={pixel} index={i()} />
+        }</For>
+    </div>)
+}
+
+
 
 export const Display = () => {
- 
+
 
     console.log('runnin')
     // Create WebSocket connection.
@@ -119,11 +139,13 @@ export const Display = () => {
     setSocket(socket)
 
     // Connection opened
+    
     socket.addEventListener("open", (event) => {
         const message = createMessage()
 
         socket.send(message);
     });
+    
 
 
 

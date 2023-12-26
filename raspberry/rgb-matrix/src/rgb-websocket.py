@@ -1,6 +1,7 @@
 import time
 import board
 import neopixel
+import json
 
 
 
@@ -15,15 +16,15 @@ delay = 0.07
 
 def run_animation():
   for x in range(led_number):
-    pixels1[x] = (255, 0, 0)
+    pixels1[x] = (255, 100, 0)
     time.sleep(delay)
 
   for x in range(led_number):
-    pixels1[x] = (0, 255, 0)
+    pixels1[x] = (100, 255, 0)
     time.sleep(delay)
 
   for x in range(led_number):
-    pixels1[x] = (0, 0, 255)
+    pixels1[x] = (0, 100, 255)
     time.sleep(delay)
 
   for x in range(led_number):
@@ -31,10 +32,25 @@ def run_animation():
     time.sleep(delay)
 
 
+def display_pixels(messsage):
+   data = json.loads(messsage)
+
+   i = 0
+
+   for pixel in data["pixels"]:
+    pixels1[i] = (pixel["r"], pixel["g"], pixel["b"])
+    i = i + 1
+    print(pixel)
+   
+   print(type(messsage))
+   print(messsage)
+   
+
+
 
 async def display(websocket):
     async for message in websocket:
-        run_animation()
+        display_pixels(message)
         await websocket.send(message)
 
 async def main():

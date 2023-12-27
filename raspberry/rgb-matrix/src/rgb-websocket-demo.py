@@ -15,15 +15,15 @@ delay = 0.07
 
 def run_animation():
   for x in range(led_number):
-    pixels1[x] = (255, 0, 0)
+    pixels1[x] = (255, 100, 0)
     time.sleep(delay)
 
   for x in range(led_number):
-    pixels1[x] = (0, 255, 0)
+    pixels1[x] = (100, 255, 0)
     time.sleep(delay)
 
   for x in range(led_number):
-    pixels1[x] = (0, 0, 255)
+    pixels1[x] = (0, 100, 255)
     time.sleep(delay)
 
   for x in range(led_number):

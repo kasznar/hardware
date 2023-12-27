@@ -9,27 +9,10 @@ import asyncio
 from websockets.server import serve
 
 led_number = 48
-pixels1 = neopixel.NeoPixel(board.D18, led_number, brightness=0.1)
+pixels1 = neopixel.NeoPixel(board.D18, led_number, brightness=0.1, auto_write=False,)
 
 
-delay = 0.07
 
-def run_animation():
-  for x in range(led_number):
-    pixels1[x] = (255, 100, 0)
-    time.sleep(delay)
-
-  for x in range(led_number):
-    pixels1[x] = (100, 255, 0)
-    time.sleep(delay)
-
-  for x in range(led_number):
-    pixels1[x] = (0, 100, 255)
-    time.sleep(delay)
-
-  for x in range(led_number):
-    pixels1[x] = (0, 0, 0)
-    time.sleep(delay)
 
 
 def display_pixels(messsage):
@@ -39,13 +22,9 @@ def display_pixels(messsage):
 
    for pixel in data["pixels"]:
     pixels1[i] = (pixel["r"], pixel["g"], pixel["b"])
-    i = i + 1
-    print(pixel)
-   
-   print(type(messsage))
-   print(messsage)
-   
-
+    i = i + 1   
+  
+   pixels1.show()
 
 
 async def display(websocket):

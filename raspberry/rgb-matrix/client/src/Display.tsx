@@ -1,15 +1,10 @@
 import { For, createEffect, createSignal } from "solid-js"
 
-const displayMap = [
-    0, 1, 2, 3,
-    7, 6, 5, 4,
-    8, 9, 10, 11,
-    15, 14, 13, 12
-]
+
 
 
 const config = {
-    width: 4,
+    width: 12,
     height: 4
 }
 
@@ -39,6 +34,28 @@ const [socket, setSocket] = createSignal<WebSocket | null>(null)
 const rgbToRequest = (item: RgbPixel) => ({ r: item.getRed(), g: item.getGreen(), b: item.getBlue() })
 
 
+
+const displayMap = [
+    [0, 1, 2, 3,],
+    [7, 6, 5, 4,],
+    [8, 9, 10, 11,],
+    [15, 14, 13, 12],
+]
+
+const combinedMap: number[][] = [[], [], [], []];
+
+for (let j = 0; j < 3; j++) {
+  for (let i = 0; i < 4; i++) {
+    const row = displayMap[i];
+    const shifted = row.map((item) => item + 16 * j);
+
+    combinedMap[i].push(...shifted);
+  }
+}
+
+const flatCombinedMap = combinedMap.flat()
+
+
 const createMessage = () => {
     const displayAdjustedPixels = mapToDisplay(pixels())
     const pixelsMessage = displayAdjustedPixels.map(rgbToRequest)
@@ -50,15 +67,12 @@ const createMessage = () => {
 }
 
 const mapToDisplay = (pixels: RgbPixel[]) => {
-    // return pixels
-
     const result: RgbPixel[] = new Array(length).fill(new RgbPixel(0, 0, 0))
 
 
-
-    for (let i=0; i < 16; i++) {
-        const index = displayMap[i]
-        result[i] = pixels[index] 
+    for (let i = 0; i < length; i++) {
+        const index = flatCombinedMap[i]
+        result[index] = pixels[i]
     }
 
     return result
@@ -139,13 +153,13 @@ export const Display = () => {
     setSocket(socket)
 
     // Connection opened
-    
+
     socket.addEventListener("open", (event) => {
         const message = createMessage()
 
         socket.send(message);
     });
-    
+
 
 
 

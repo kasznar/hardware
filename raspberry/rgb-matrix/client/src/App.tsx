@@ -1,15 +1,7 @@
-import { createSignal } from 'solid-js'
-
 import './App.css'
-import { Display } from './Display'
-
-
-
-
-
+import { Display } from './presentation/Display'
 
 function App() {
-  const [count, setCount] = createSignal(0)
 
   return (
     <>
